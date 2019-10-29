@@ -1,5 +1,8 @@
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
@@ -18,14 +21,19 @@ import javax.sql.DataSource;
 class ApplicationConfig {
 
     @Bean
-    public DataSource dataSource() {
+    public DataSource dataSource(Environment env) {
 
-        EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-        return builder.setType(EmbeddedDatabaseType.HSQL).build();
+        HikariConfig dataSourceConfig = new HikariConfig();
+        dataSourceConfig.setDriverClassName(env.getRequiredProperty("spring.datasource.driverClassName"));
+        dataSourceConfig.setJdbcUrl(env.getRequiredProperty("spring.datasource.url"));
+        dataSourceConfig.setUsername(env.getRequiredProperty("spring.datasource.username"));
+        dataSourceConfig.setPassword(env.getRequiredProperty("spring.datasource.password"));
+
+        return new HikariDataSource(dataSourceConfig);
     }
 
     @Bean
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory(Environment env) {
 
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         vendorAdapter.setGenerateDdl(false);
@@ -33,7 +41,7 @@ class ApplicationConfig {
         LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
         factory.setJpaVendorAdapter(vendorAdapter);
         //factory.setPackagesToScan("com.acme.domain");
-        factory.setDataSource(dataSource());
+        factory.setDataSource(dataSource(env));
         return factory;
     }
 
