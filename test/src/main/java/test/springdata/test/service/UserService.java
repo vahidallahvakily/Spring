@@ -1,20 +1,18 @@
 package test.springdata.test.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import test.springdata.test.dao.UserDao;
+import test.springdata.test.dto.OperationResult;
 import test.springdata.test.model.User;
 
 import java.util.List;
+import java.util.Optional;
 
-@Service
-public class UserService {
 
-    @Autowired
-    UserDao userDao;
+public interface UserService {
 
-    public List<User> findAll(){
-        return userDao.findAll();
-    }
+    List<User> findAll();
+
+    Optional<User> findById(Integer id);
+
+    OperationResult saveUser(User user);
 
 }
