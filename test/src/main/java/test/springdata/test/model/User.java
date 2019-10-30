@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "USER")
+@Table(name = "USERS")
 public class User {
     @Id
     @Column(name = "id")
